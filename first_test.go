@@ -1,7 +1,6 @@
 package main
 
 import (
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,32 +12,37 @@ func TestAlwaysTrue(t *testing.T) {
 }
 
 func TestShouldReturn1for1(t *testing.T) {
-	result := fizzBuzz()
+	result := FizzBuzz(10)
 
-	assert.Equal(t, result[0], "1")
+	assert.Equal(t, "1",result[0])
 }
 
 func TestShouldReturnFizzfor2ndElement(t *testing.T) {
-	result := fizzBuzz()
+	result := FizzBuzz(10)
 
-	assert.Equal(t, result[2], "Fizz")
+	assert.Equal(t,"Fizz", result[2] )
 }
 
 func TestShouldReturnBuzzfor4thElement(t *testing.T) {
-	result := fizzBuzz()
+	result := FizzBuzz(10)
 
-	assert.Equal(t, result[4], "Buzz")
+	assert.Equal(t, "Buzz",result[4])
 }
 
 func TestShouldReturnBuzzfor5thElement(t *testing.T) {
-	result := fizzBuzz()
+	result := FizzBuzz(10)
 
-	assert.Equal(t, result[5], "Fizz")
+	assert.Equal(t,"Fizz", result[5])
 }
 
+func TestShouldReturnFizzBuzzfor15thElement(t *testing.T){
+	result := FizzBuzz(15)
+
+	assert.Equal(t, "FizzBuzz", result[14])
+}
 func TestShouldReturnExpectedOutput(t *testing.T) {
-	result := fizzBuzz()
-	assert.Equal(t, result, [10]string{"1",
+	result := FizzBuzz(10)
+	assert.Equal(t,[]string{"1",
 		"2",
 		"Fizz",
 		"4",
@@ -47,21 +51,6 @@ func TestShouldReturnExpectedOutput(t *testing.T) {
 		"7",
 		"8",
 		"Fizz",
-		"Buzz"})
+		"Buzz"}, result )
 }
 
-func fizzBuzz() [10]string {
-
-	results := [10]string{}
-	for i := 0; i < 10; i++ {
-		results[i] = strconv.Itoa(i + 1)
-		if (i+1)%3 == 0 {
-			results[i] = "Fizz"
-		} else if (i+1)%5 == 0 {
-			results[i] = "Buzz"
-		} else {
-
-		}
-	}
-	return results
-}
