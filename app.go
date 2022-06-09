@@ -1,14 +1,16 @@
 package main
 
 import (
-	"fmt"
+	"os"
 
 	"github.com/contino/go-kata-starter/checkout"
+	"github.com/contino/go-kata-starter/receiptPrinter"
 )
 
 func main() {
-	price := checkout.Scan("ABA", GetDiscountsActual())
-	fmt.Printf("%d\n", price)
+	args := os.Args
+	price := checkout.Scan(args[1], GetDiscountsActual())
+	receiptPrinter.PrintReceipt(price)
 
 }
 
