@@ -11,62 +11,62 @@ func TestAlwaysTrue(t *testing.T) {
 	assert.True(t, true)
 }
 
-func TestEmptyBasketIsZero(t *testing.T) {
+func TestEmptyBasketIs0(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("")
+	var TotalPrice = scanWithPriceAndDiscount("")
 	assert.Equal(t, 0, TotalPrice)
 }
 
-func TestItemAisFifty(t *testing.T) {
+func TestItemAis50(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("A")
+	var TotalPrice = scanWithPriceAndDiscount("A")
 	assert.Equal(t, 50, TotalPrice)
 }
 
-func TestItemAAisOneHundred(t *testing.T) {
+func TestItemAAis100(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("AA")
+	var TotalPrice = scanWithPriceAndDiscount("AA")
 	assert.Equal(t, 100, TotalPrice)
 }
 
-func TestItemBisThirty(t *testing.T) {
+func TestItemBis30(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("B")
+	var TotalPrice = scanWithPriceAndDiscount("B")
 	assert.Equal(t, 30, TotalPrice)
 
 }
 
-func TestItemAAAisOneThirty(t *testing.T) {
-	var TotalPrice = ScanWithPriceAndDiscount("AAA")
+func TestItemAAAis130(t *testing.T) {
+	var TotalPrice = scanWithPriceAndDiscount("AAA")
 	assert.Equal(t, 130, TotalPrice)
 }
 
-func TestItemAAAAisOneEighty(t *testing.T) {
-	var TotalPrice = ScanWithPriceAndDiscount("AAAA")
+func TestItemAAAAis180(t *testing.T) {
+	var TotalPrice = scanWithPriceAndDiscount("AAAA")
 	assert.Equal(t, 180, TotalPrice)
 }
 
 func TestItemAAAAAAis260(t *testing.T) {
-	var TotalPrice = ScanWithPriceAndDiscount("AAAAAA")
+	var TotalPrice = scanWithPriceAndDiscount("AAAAAA")
 	assert.Equal(t, 260, TotalPrice)
 }
 
 func TestItemBBis45(t *testing.T) {
-	var TotalPrice = ScanWithPriceAndDiscount("BB")
+	var TotalPrice = scanWithPriceAndDiscount("BB")
 	assert.Equal(t, 45, TotalPrice)
 }
 
-func TestItemABisEighty(t *testing.T) {
+func TestItemABis80(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("AB")
+	var TotalPrice = scanWithPriceAndDiscount("AB")
 	assert.Equal(t, 80, TotalPrice)
 }
 func TestItemCBDAis115(t *testing.T) {
 
-	var TotalPrice = ScanWithPriceAndDiscount("CBDA")
+	var TotalPrice = scanWithPriceAndDiscount("CBDA")
 	assert.Equal(t, 115, TotalPrice)
 }
-func ScanWithPriceAndDiscount(items string) int {
+func scanWithPriceAndDiscount(items string) int {
 	return Scan(items, getDiscounts())
 }
 
