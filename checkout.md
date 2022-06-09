@@ -34,3 +34,41 @@ The interface to your checkout can be anything you like but we’d suggest passi
 
 credits: adapted from Dave Thomas http://codekata.pragprog.com/2007/01/kata_nine_back_.html
 
+Create a command line application which will print an itemised reciept for the items in the checkout. It should accept a string.
+
+```
+checkout ABC
+```
+
+Expected output :
+
+```
+  Reciept
+
+A               £50.00
+B               £30.00
+C               £20.00
+----------------------
+Total          £100.00
+
+Total to pay   £100.00
+
+```
+When there are offers included
+```
+checkout AAAB
+```
+
+```
+  Reciept
+A               £50.00
+A               £50.00
+A*              £50.00
+B               £30.00
+----------------------
+Total          £180.00
+Total savings   £20.00
+
+Total to pay   £160.00
+
+```
