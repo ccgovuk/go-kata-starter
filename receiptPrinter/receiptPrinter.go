@@ -1,7 +1,11 @@
 package receiptPrinter
 
-import "fmt"
+import (
+	"fmt"
 
-func PrintReceipt(price int) {
-	fmt.Printf("%d\n", price)
+	"github.com/contino/go-kata-starter/basket"
+)
+
+func PrintReceipt(b basket.Basket) string {
+	return fmt.Sprintf("Total         £%d.00\n", b.Total)
 }

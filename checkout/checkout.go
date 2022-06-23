@@ -28,6 +28,7 @@ func calculateDiscount(items string, skus map[rune]Sku) int {
 
 	return discount
 }
+
 func getCounts(items string) map[rune]int {
 	var counts = make(map[rune]int)
 	for _, item := range items {
