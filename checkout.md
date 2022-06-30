@@ -43,7 +43,7 @@ checkout ABC
 Expected output :
 
 ```
-  Reciept
+  Receipt
 
 A               £50.00
 B               £30.00

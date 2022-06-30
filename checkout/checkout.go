@@ -1,20 +1,21 @@
 package checkout
 
+import "github.com/contino/go-kata-starter/order"
+
 type Sku struct {
 	Quantity int
 	Discount int
 	Price    int
 }
 
-func Scan(items string, skus map[rune]Sku) int {
+func Scan(itemsInBasket string, skus map[rune]Sku) order.Order {
 
-	discount := calculateDiscount(items, skus)
+	discount := calculateDiscount(itemsInBasket, skus)
 	total := 0
-	for _, item := range items {
-		total += skus[item].Price
+	for _, itemInBasket := range itemsInBasket {
+		total += skus[itemInBasket].Price
 	}
-	return total - discount
-
+	return order.Order{Total: total - discount}
 }
 
 func calculateDiscount(items string, skus map[rune]Sku) int {

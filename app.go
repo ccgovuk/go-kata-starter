@@ -10,8 +10,8 @@ import (
 
 func main() {
 	args := os.Args
-	price := checkout.Scan(args[1], GetDiscountsActual())
-	fmt.Print(receiptPrinter.PrintReceipt(price))
+	basket := checkout.Scan(args[1], GetDiscountsActual())
+	fmt.Print(receiptPrinter.PrintReceipt(basket))
 
 }
 

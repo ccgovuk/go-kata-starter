@@ -67,7 +67,8 @@ func TestItemCBDAis115(t *testing.T) {
 	assert.Equal(t, 115, TotalPrice)
 }
 func scanWithPriceAndDiscount(items string) int {
-	return Scan(items, getDiscounts())
+	order := Scan(items, getDiscounts())
+	return order.Total
 }
 
 func getDiscounts() map[rune]Sku {
