@@ -18,3 +18,16 @@ func TestPrintTotalFormatted(t *testing.T) {
 	receipt := PrintReceipt(order)
 	assert.Equal(t, expectedReceipt, receipt)
 }
+
+func TestReceiptHasOne_A_WhenOnlyOne_A_InOrder(t *testing.T) {
+
+	ois := []order.OrderItem{
+		{Item: "A", PricePaid: 50},
+	}
+
+	o := order.Order{Total: 50, OrderItems: ois}
+
+	expectedLine := "A               £50.00"
+	receipt := PrintReceipt(o)
+	assert.Contains(t, expectedLine, receipt)
+}
