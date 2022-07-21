@@ -6,6 +6,6 @@ type Order struct {
 }
 
 type OrderItem struct {
-	Item      string
+	Item      rune
 	PricePaid int
 }

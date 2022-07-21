@@ -3,6 +3,7 @@ package checkout
 import (
 	"testing"
 
+	"github.com/contino/go-kata-starter/order"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -65,6 +66,13 @@ func TestItemCBDAis115(t *testing.T) {
 
 	var TotalPrice = scanWithPriceAndDiscount("CBDA")
 	assert.Equal(t, 115, TotalPrice)
+}
+func TestItemAisInTheOrderWhenAisInTheBasket(t *testing.T) {
+	items := "A"
+	expectedOrderItem := order.OrderItem{Item: 'A', PricePaid: 50}
+	scannedOrder := Scan(items, getDiscounts())
+	assert.Contains(t, scannedOrder.OrderItems, expectedOrderItem)
+	// assert.Contains(t, ["Hello", "World"], "World")
 }
 func scanWithPriceAndDiscount(items string) int {
 	order := Scan(items, getDiscounts())
