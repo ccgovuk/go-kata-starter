@@ -7,10 +7,22 @@ import (
 )
 
 func scanOCR(input string) string {
-	if input[1] == ' ' {
-		return "111111111"
+	if len(input) != 84 {
+		return " ERR"
 	}
-	return "000000000"
+	switch {
+	case input[1] == ' ':
+		return "111111111"
+	case input[29] == '_':
+		return "222222222"
+	default:
+		return "000000000"
+	}
+
+}
+
+func parseDigit(input [3]string) rune {
+	return '8'
 }
 
 func TestAlwaysTrue(t *testing.T) {
@@ -20,42 +32,53 @@ func TestAlwaysTrue(t *testing.T) {
 
 func TestAllZeros(t *testing.T) {
 
-	//  _  _  _  _  _  _  _  _  _
-	// | || || || || || || || || |
-	// |_||_||_||_||_||_||_||_||_|
-	//
-	input := ` _  _  _  _  _  _  _  _  _ 
- | || || || || || || || || |
- |_||_||_||_||_||_||_||_||_|
-`
+	input := " _  _  _  _  _  _  _  _  _ \n"
+	input += "| || || || || || || || || |\n"
+	input += "|_||_||_||_||_||_||_||_||_|\n"
+
 	result := scanOCR(input)
 	assert.Equal(t, "000000000", result)
 }
 
 func TestAllOnes(t *testing.T) {
 
-	//
-	//   |  |  |  |  |  |  |  |  |
-	//   |  |  |  |  |  |  |  |  |
-	//
-	input := `                           
-  |  |  |  |  |  |  |  |  |
-  |  |  |  |  |  |  |  |  |
-`
+	input := "                           \n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+
 	result := scanOCR(input)
 	assert.Equal(t, "111111111", result)
 }
 
-func TestInpuLengthIs84(t *testing.T) {
+func TestAllTwos(t *testing.T) {
+	input := " _  _  _  _  _  _  _  _  _ \n"
+	input += " _| _| _| _| _| _| _| _| _|\n"
+	input += "|_ |_ |_ |_ |_ |_ |_ |_ |_ \n"
 
-	input := `                           
-  |  |  |  |  |  |  |  |  |
-  |  |  |  |  |  |  |  |  |
-`
-	result := len(input)
-	assert.Equal(t, 84, result)
+	result := scanOCR(input)
+	assert.Equal(t, "222222222", result)
 }
 
-///TODO
-// Test if an error is thrown when line length is incorrent
-//
+func TestIncorrectLengthReturnsError(t *testing.T) {
+
+	input := "_  _  _  _  _  _  _  _  _ \n"
+	input += "_| _| _| _| _| _| _| _| _|\n"
+	input += "|_ |_ |_ |_ |_ |_ |_ |_ |_ \n"
+
+	result := scanOCR(input)
+	assert.Equal(t, " ERR", result[len(result)-4:])
+}
+
+func TestDigitEightReturnedFromComponantStrings(t *testing.T) {
+	input := [3]string { " _ ", "|_|", "|_|"}
+	result := parseDigit(input)
+	assert.Equal(t, '8', result)
+}
+
+func TestDigitFourReturnedFromComponantStrings(t *testing.T) {
+	input := [3]string { "   ", "|_|", "  |"}
+	result := parseDigit(input)
+	assert.Equal(t, '4', result)
+}
+
+// TODO: Parse digits
