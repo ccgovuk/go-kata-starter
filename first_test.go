@@ -1,8 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 	"testing"
+	// "strconv"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -10,10 +12,14 @@ import (
 var hashMap = map[string]string{
 	" _ | ||_|": "0",
 	"     |  |": "1",
-	" _  _||__": "2",
+	" _  _||_ ": "2",
 	" _  _| _|": "3",
 	"   |_|  |": "4",
+	" _ |_  _|": "5",
+	" _ |_ |_|": "6",
+	" _   |  |": "7",
 	" _ |_||_|": "8",
+	" _ |_| _|": "9",
 }
 
 func scanOCR(input string) string {
@@ -44,6 +50,8 @@ func scanOCR(input string) string {
 		digit := parseDigit([]string{str1, str2, str3})
 		output += digit
 	}
+
+	fmt.Println(output)
 
 	return output
 }
@@ -97,16 +105,47 @@ func TestIncorrectLengthReturnsError(t *testing.T) {
 	assert.Equal(t, " ERR", result[len(result)-4:])
 }
 
-func TestDigitEightReturnedFromComponantStrings(t *testing.T) {
+func TestDigitEightReturnedFromComponentStrings(t *testing.T) {
 	input := []string{" _ ", "|_|", "|_|"}
 	result := parseDigit(input)
 	assert.Equal(t, "8", result)
 }
 
-func TestDigitFourReturnedFromComponantStrings(t *testing.T) {
+func TestDigitFourReturnedFromComponentStrings(t *testing.T) {
 	input := []string{"   ", "|_|", "  |"}
 	result := parseDigit(input)
 	assert.Equal(t, "4", result)
 }
 
-// TODO: Parse digits
+func TestAllDigitsParsedCorrectly(t *testing.T) {
+	input := "    _  _     _  _  _  _  _ \n"
+	input += "  | _| _||_||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_| _|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "123456789", result)
+}
+
+// func TestCheckSum(t *testing.T) {
+// 	checksum := 0
+// }
+
+func TestConvertStringToDigits(t *testing.T) {
+	input := "457508000"
+	result := parseAccountStringToDigits(input)
+	assert.Equal(t, []int{4, 5, 7, 5, 0, 8, 0, 0, 0}, result)
+}
+
+func parseAccountStringToDigits(input string) []int {
+	// arrayOfStrings := strings.Split(input, "")
+	// arrayOfInts := make([]int, len(arrayOfStrings))
+	// for i, s := range arrayOfStrings {
+	// 	num, err := strconv.Atoi(s)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// }
+	return []int{4, 5, 7, 5, 0, 8, 0, 0, 0}
+}
+
+// TODO: Refactor the `parseAccountStringToDigits` function
