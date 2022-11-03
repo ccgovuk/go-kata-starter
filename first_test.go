@@ -1,10 +1,9 @@
 package main
 
 import (
-	"fmt"
+	"strconv"
 	"strings"
 	"testing"
-	// "strconv"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -29,20 +28,6 @@ func scanOCR(input string) string {
 		return " ERR"
 	}
 
-	// switch {
-	// case input[1] == ' ':
-	// 	return "111111111"
-	// case input[29] == '_':
-	// 	return "222222222"
-	// default:
-	// 	return "000000000"
-	// }
-
-	// for i, character := range inputArray[0] {
-	// 	o := input[0:3]
-	// 	o := input[3:6]
-	// }
-
 	for i := 0; i < 27; i += 3 {
 		str1 := input[i : i+3]
 		str2 := input[i+28 : i+31]
@@ -50,15 +35,49 @@ func scanOCR(input string) string {
 		digit := parseDigit([]string{str1, str2, str3})
 		output += digit
 	}
-
-	fmt.Println(output)
-
+	digits, err := parseAccountStringToDigits(output)
+	if err != nil {
+		output += " ILL"
+		return output
+	}
+	if !calculateCheckSum(digits) {
+		output += " ERR"
+	}
 	return output
 }
 
 func parseDigit(input []string) string {
 	key := strings.Join(input, "")
-	return hashMap[key]
+	value, ok := hashMap[key]
+	if ok {
+		return value
+	}
+	return "?"
+}
+
+func calculateCheckSum(input []int) bool {
+	sum := 0
+	for i, j := range input {
+		sum += j * (len(input) - i)
+	}
+
+	return sum%11 == 0
+}
+
+func parseAccountStringToDigits(input string) ([]int, error) {
+	arrayOfStrings := strings.Split(input, "")
+	arrayOfInts := make([]int, len(arrayOfStrings))
+
+	for i, s := range arrayOfStrings {
+		num, err := strconv.Atoi(s)
+		if err != nil {
+			return []int{}, err
+		}
+
+		arrayOfInts[i] = num
+	}
+
+	return arrayOfInts, nil
 }
 
 func TestAlwaysTrue(t *testing.T) {
@@ -83,7 +102,7 @@ func TestAllOnes(t *testing.T) {
 	input += "  |  |  |  |  |  |  |  |  |\n"
 
 	result := scanOCR(input)
-	assert.Equal(t, "111111111", result)
+	assert.Equal(t, "111111111 ERR", result)
 }
 
 func TestAllTwos(t *testing.T) {
@@ -92,7 +111,7 @@ func TestAllTwos(t *testing.T) {
 	input += "|_ |_ |_ |_ |_ |_ |_ |_ |_ \n"
 
 	result := scanOCR(input)
-	assert.Equal(t, "222222222", result)
+	assert.Equal(t, "222222222 ERR", result)
 }
 
 func TestIncorrectLengthReturnsError(t *testing.T) {
@@ -126,26 +145,49 @@ func TestAllDigitsParsedCorrectly(t *testing.T) {
 	assert.Equal(t, "123456789", result)
 }
 
-// func TestCheckSum(t *testing.T) {
-// 	checksum := 0
-// }
+func TestCheckSumPass(t *testing.T) {
+	input := []int{4, 5, 7, 5, 0, 8, 0, 0, 0}
+	checksum := calculateCheckSum(input)
+	assert.True(t, checksum)
+}
+
+func TestCheckSumFail(t *testing.T) {
+	input := []int{6, 6, 4, 3, 7, 1, 4, 9, 5}
+	checksum := calculateCheckSum(input)
+	assert.False(t, checksum)
+}
 
 func TestConvertStringToDigits(t *testing.T) {
 	input := "457508000"
-	result := parseAccountStringToDigits(input)
+	result, _ := parseAccountStringToDigits(input)
 	assert.Equal(t, []int{4, 5, 7, 5, 0, 8, 0, 0, 0}, result)
 }
 
-func parseAccountStringToDigits(input string) []int {
-	// arrayOfStrings := strings.Split(input, "")
-	// arrayOfInts := make([]int, len(arrayOfStrings))
-	// for i, s := range arrayOfStrings {
-	// 	num, err := strconv.Atoi(s)
-	// 	if err != nil {
-	// 		return
-	// 	}
-	// }
-	return []int{4, 5, 7, 5, 0, 8, 0, 0, 0}
+func TestDigitsParsedCheckSumCorrect(t *testing.T) {
+	input := "    _  _     _  _  _  _  _ \n"
+	input += "  | _| _||_||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_| _|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "123456789", result)
 }
 
-// TODO: Refactor the `parseAccountStringToDigits` function
+func TestDigitsParsedCheckSumInCorrect(t *testing.T) {
+	input := "    _  _     _  _  _  _  _ \n"
+	input += "  | _| _||_||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_||_|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "123456788 ERR", result)
+}
+
+func TestDigitsParsedIllegalCharacters(t *testing.T) {
+	input := "    _  _     _  _  _  _    \n"
+	input += "  | _| _||_||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_||_|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "12345678? ILL", result)
+}
+
+// TODO: Create a test for ILL input with question mark in the middle.
