@@ -1,84 +1,10 @@
 package main
 
 import (
-	"strconv"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
-
-var hashMap = map[string]string{
-	" _ | ||_|": "0",
-	"     |  |": "1",
-	" _  _||_ ": "2",
-	" _  _| _|": "3",
-	"   |_|  |": "4",
-	" _ |_  _|": "5",
-	" _ |_ |_|": "6",
-	" _   |  |": "7",
-	" _ |_||_|": "8",
-	" _ |_| _|": "9",
-}
-
-func scanOCR(input string) string {
-	output := ""
-
-	if len(input) != 84 {
-		return " ERR"
-	}
-
-	for i := 0; i < 27; i += 3 {
-		str1 := input[i : i+3]
-		str2 := input[i+28 : i+31]
-		str3 := input[i+56 : i+59]
-		digit := parseDigit([]string{str1, str2, str3})
-		output += digit
-	}
-	digits, err := parseAccountStringToDigits(output)
-	if err != nil {
-		output += " ILL"
-		return output
-	}
-	if !calculateCheckSum(digits) {
-		output += " ERR"
-	}
-	return output
-}
-
-func parseDigit(input []string) string {
-	key := strings.Join(input, "")
-	value, ok := hashMap[key]
-	if ok {
-		return value
-	}
-	return "?"
-}
-
-func calculateCheckSum(input []int) bool {
-	sum := 0
-	for i, j := range input {
-		sum += j * (len(input) - i)
-	}
-
-	return sum%11 == 0
-}
-
-func parseAccountStringToDigits(input string) ([]int, error) {
-	arrayOfStrings := strings.Split(input, "")
-	arrayOfInts := make([]int, len(arrayOfStrings))
-
-	for i, s := range arrayOfStrings {
-		num, err := strconv.Atoi(s)
-		if err != nil {
-			return []int{}, err
-		}
-
-		arrayOfInts[i] = num
-	}
-
-	return arrayOfInts, nil
-}
 
 func TestAlwaysTrue(t *testing.T) {
 
@@ -121,7 +47,7 @@ func TestIncorrectLengthReturnsError(t *testing.T) {
 	input += "|_ |_ |_ |_ |_ |_ |_ |_ |_ \n"
 
 	result := scanOCR(input)
-	assert.Equal(t, " ERR", result[len(result)-4:])
+	assert.Equal(t, " ERR", result)
 }
 
 func TestDigitEightReturnedFromComponentStrings(t *testing.T) {
@@ -190,4 +116,11 @@ func TestDigitsParsedIllegalCharacters(t *testing.T) {
 	assert.Equal(t, "12345678? ILL", result)
 }
 
-// TODO: Create a test for ILL input with question mark in the middle.
+func TestDigitsParsedIllegalCharactersMiddle(t *testing.T) {
+	input := "    _  _     _  _  _  _    \n"
+	input += "  | _| _|| ||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_||_|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "123?5678? ILL", result)
+}
