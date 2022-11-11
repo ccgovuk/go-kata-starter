@@ -190,4 +190,11 @@ func TestDigitsParsedIllegalCharacters(t *testing.T) {
 	assert.Equal(t, "12345678? ILL", result)
 }
 
-// TODO: Create a test for ILL input with question mark in the middle.
+func TestParseIllegalCharacterInMiddle(t *testing.T) {
+	input := "    _  _        _  _  _    \n"
+	input += "  | _| _||_||_ |_   ||_||_|\n"
+	input += "  ||_  _|  | _||_|  ||_||_|\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "1234?678? ILL", result)
+}
