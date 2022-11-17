@@ -52,6 +52,10 @@ func (d Digit) Eval() string {
 	return "?"
 }
 
+func (d Digit) Int() (int, error) {
+		return strconv.Atoi(d.Eval())
+}
+
 var hashMap = map[string]string{
 	" _ | ||_|": "0",
 	"     |  |": "1",
