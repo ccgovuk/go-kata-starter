@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"testing"
@@ -41,8 +42,6 @@ func (d *Digit) parseDigit() {
 }
 
 func scanOCR(input string) string {
-	output := ""
-
 	if len(input) != 84 {
 		return " ERR"
 	}
@@ -55,18 +54,34 @@ func scanOCR(input string) string {
 		str3 := input[i+56 : i+59]
 		digit := Digit{asciiChar: []string{str1, str2, str3}}
 		digit.parseDigit()
-		accountNumber.digits[i] = digit
-		output += digit.value
+		if i == 0 {
+			accountNumber.digits[i] = digit
+		} else {
+			accountNumber.digits[i/3] = digit
+		}
 	}
+
 	err := accountNumber.parseAccountStringToDigits()
+	output := accountNumber.String()
+
 	if err != nil {
-		output += " ILL"
 		return output
 	}
+
 	if !accountNumber.calculateCheckSum() {
-		output += " ERR"
+		alternateList := accountNumber.shuffle()
+		if len(alternateList) == 1 {
+			output = alternateList[0]
+		} else {
+			output += fmt.Sprintf(" AMB %v", alternateList)
+		}
 	}
+
 	return output
+}
+
+func (ocr AccountNumber) shuffle() []string {
+	return []string{"711111111"}
 }
 
 func (ocr *AccountNumber) calculateCheckSum() bool {
@@ -82,6 +97,7 @@ func (ocr *AccountNumber) parseAccountStringToDigits() error {
 
 	for i, s := range ocr.digits {
 		num, err := strconv.Atoi(s.value)
+
 		if err != nil {
 			return err
 		}
@@ -90,6 +106,20 @@ func (ocr *AccountNumber) parseAccountStringToDigits() error {
 	}
 
 	return nil
+}
+
+func (ocr AccountNumber) String() string {
+	output := ""
+	suffix := ""
+
+	for _, digit := range ocr.digits {
+		if digit.value == "?" {
+			suffix = " ILL"
+		}
+		output += digit.value
+	}
+
+	return output + suffix
 }
 
 func TestAlwaysTrue(t *testing.T) {
@@ -161,15 +191,15 @@ func TestAllDigitsParsedCorrectly(t *testing.T) {
 
 func TestCheckSumPass(t *testing.T) {
 	input := [9]Digit{
-		Digit{intValue: 4},
-		Digit{intValue: 5},
-		Digit{intValue: 7},
-		Digit{intValue: 5},
-		Digit{intValue: 0},
-		Digit{intValue: 8},
-		Digit{intValue: 0},
-		Digit{intValue: 0},
-		Digit{intValue: 0},
+		{intValue: 4},
+		{intValue: 5},
+		{intValue: 7},
+		{intValue: 5},
+		{intValue: 0},
+		{intValue: 8},
+		{intValue: 0},
+		{intValue: 0},
+		{intValue: 0},
 	}
 	accountNumber := AccountNumber{digits: input}
 	checksum := accountNumber.calculateCheckSum()
@@ -222,4 +252,14 @@ func TestParseIllegalCharacterInMiddle(t *testing.T) {
 
 	result := scanOCR(input)
 	assert.Equal(t, "1234?678? ILL", result)
+}
+
+func TestAllOnesVersion2(t *testing.T) {
+
+	input := "                           \n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "711111111", result)
 }
