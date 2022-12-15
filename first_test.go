@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -86,7 +87,7 @@ func scanOCR(input string) string {
 	}
 
 	if !accountNumber.calculateCheckSum() {
-		alternateList := accountNumber.shuffle()
+		alternateList := accountNumber.findPossibleAccountNumbers()
 		if len(alternateList) == 1 {
 			output = alternateList[0]
 		} else {
@@ -97,7 +98,8 @@ func scanOCR(input string) string {
 	return output
 }
 
-func (ocr AccountNumber) shuffle() []string {
+func (ocr AccountNumber) findPossibleAccountNumbers() []string {
+
 	return []string{"711111111"}
 }
 
@@ -282,10 +284,8 @@ func TestInvalidDigit(t *testing.T) {
 	input += "| |"
 	input += "|_|"
 
-	digit := Digit{
-		asciiChar: strings.Split(input, ""),
-		strValue:  input,
-	}
+	digit := MakeDigit([]string{input})
+	// digit := MakeDigit(strings.Split(input, ""))
 
 	result := digit.isValid()
 
@@ -305,17 +305,46 @@ func TestValidDigit(t *testing.T) {
 }
 
 func (d Digit) isValid() bool {
-	_, ok := hashMap[d.strValue]
+	_, ok := hashMap[strings.Join(d.asciiChar, "")]
 	return ok
 }
 
-// func deleteMe() {
-// 	possibleCharacters := []string{" ", "_", "|"}
+func TestFindPossibleDigits(t *testing.T) {
+	input := " _ "
+	input += "|_|"
+	input += "|_|"
 
-// 	input := "|_ "
-// 	input += "| |"
-// 	input += "|_|"
+	digit := MakeDigit([]string{input})
+	result := digit.findPossibleDigits()
 
-// 	digit := Digit{}
-// 	digit.parseDigit(input)
-// }
+	assert.EqualValues(t, []string{"0", "6", "9"}, result)
+}
+
+func TestFindPossibleDigitsAgain(t *testing.T) {
+	input := " _ "
+	input += "| |"
+	input += "|_|"
+
+	digit := MakeDigit([]string{input})
+	result := digit.findPossibleDigits()
+
+	assert.EqualValues(t, []string{"8"}, result)
+}
+
+func (d Digit) findPossibleDigits() []string {
+	result := []string{}
+	for i, char := range d.asciiChar {
+		for _, foo := range []string{" ", "|", "_"} {
+			if foo == char {
+				continue
+			}
+			d.asciiChar[i] = foo
+			if v, ok := hashMap[strings.Join(d.asciiChar, "")]; ok {
+				result = append(result, v)
+			}
+		}
+	}
+	sort.Strings(result)
+	return result
+
+}

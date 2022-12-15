@@ -1,5 +1,3 @@
 Come up with a better algorithm for the ``scanOCR`` function.
 Fix all the tests that contain " ERR"
 Engineer an algorithm for the ``AccountNumber.shuffle`` function
-
-PRIORITY: Debug the ``TestValidDigit``. It currently fails.
