@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -46,6 +45,30 @@ func MakeDigit(asciiChar []string) Digit {
 	}
 
 	return digit
+}
+
+func digitToAscii(digit rune) string {
+	for key, value := range hashMap {
+		if value == string(digit) {
+			return key
+		}
+	}
+
+	return ""
+}
+
+// accountNumber = "777777177"
+func MakeAccountNumber(accountNumber string) AccountNumber {
+	account := AccountNumber{}
+
+	for i, d := range accountNumber {
+		digitAscii := digitToAscii(d)
+		digit := MakeDigit(strings.Split(digitAscii, ""))
+
+		account.digits[i] = digit
+	}
+
+	return account
 }
 
 func (d *Digit) parseDigit() {
@@ -99,8 +122,26 @@ func scanOCR(input string) string {
 }
 
 func (ocr AccountNumber) findPossibleAccountNumbers() []string {
+	aSlice := []string{}
+	ocrCopy := ocr
 
-	return []string{"711111111"}
+	for i, digit := range ocr.digits {
+		alternates := digit.alternates()
+
+		for _, alternative_digit := range alternates {
+			newDigit := MakeDigit(strings.Split(alternative_digit, ""))
+			ocrCopy.digits[i] = newDigit
+
+			if ocrCopy.calculateCheckSum() {
+				aSlice = append(aSlice, ocrCopy.String())
+			}
+
+			ocrCopy = ocr
+
+		}
+	}
+
+	return aSlice
 }
 
 func (ocr *AccountNumber) calculateCheckSum() bool {
@@ -279,6 +320,16 @@ func TestAllOnesVersion2(t *testing.T) {
 	assert.Equal(t, "711111111", result)
 }
 
+func TestAllOnesVersion3(t *testing.T) {
+
+	input := " _  _  _  _  _  _  _  _  _ \n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+	input += "  |  |  |  |  |  |  |  |  |\n"
+
+	result := scanOCR(input)
+	assert.Equal(t, "777777177", result)
+}
+
 func TestInvalidDigit(t *testing.T) {
 	input := "|_ "
 	input += "| |"
@@ -309,42 +360,45 @@ func (d Digit) isValid() bool {
 	return ok
 }
 
-func TestFindPossibleDigits(t *testing.T) {
+func TestAlternates(t *testing.T) {
 	input := " _ "
 	input += "|_|"
 	input += "|_|"
 
 	digit := MakeDigit([]string{input})
-	result := digit.findPossibleDigits()
+	result := digit.alternates()
 
 	assert.EqualValues(t, []string{"0", "6", "9"}, result)
 }
 
-func TestFindPossibleDigitsAgain(t *testing.T) {
+func TestAlternatesAgain(t *testing.T) {
 	input := " _ "
 	input += "| |"
 	input += "|_|"
 
 	digit := MakeDigit([]string{input})
-	result := digit.findPossibleDigits()
+	result := digit.alternates()
 
 	assert.EqualValues(t, []string{"8"}, result)
 }
 
-func (d Digit) findPossibleDigits() []string {
-	result := []string{}
-	for i, char := range d.asciiChar {
-		for _, foo := range []string{" ", "|", "_"} {
-			if foo == char {
+func (d Digit) alternates() []string {
+	possibles := []string{}
+	chars := strings.Split(" _|", "")
+	inputSplit := strings.Split(strings.Join(d.asciiChar, ""), "") // TODO: fix this mess
+	n := make([]string, len(inputSplit))
+	for i, v := range inputSplit {
+		copy(n, inputSplit)
+		for _, char := range chars {
+			if v == char {
 				continue
 			}
-			d.asciiChar[i] = foo
-			if v, ok := hashMap[strings.Join(d.asciiChar, "")]; ok {
-				result = append(result, v)
+			n[i] = char
+			if num, ok := hashMap[strings.Join(n, "")]; ok {
+				possibles = append(possibles, num)
 			}
 		}
+		n = n[:] // reset slice
 	}
-	sort.Strings(result)
-	return result
-
+	return possibles
 }
