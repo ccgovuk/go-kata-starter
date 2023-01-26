@@ -1,4 +1,4 @@
 Come up with a better algorithm for the ``scanOCR`` function.
 Fix all the tests that contain " ERR"
 Engineer an algorithm for the ``AccountNumber.shuffle`` function
-Test digitToAscii
+[x] Test digitToAscii
