@@ -44,9 +44,9 @@ func MakeDigit(asciiChar []string) Digit {
 	return digit
 }
 
-func digitToAscii(digit rune) string {
+func digitToAscii(digit string) string {
 	for key, value := range hashMap {
-		if value == string(digit) {
+		if value == digit {
 			return key
 		}
 	}
@@ -59,7 +59,7 @@ func MakeAccountNumber(accountNumber string) AccountNumber {
 	account := AccountNumber{}
 
 	for i, d := range accountNumber {
-		digitAscii := digitToAscii(d)
+		digitAscii := digitToAscii(string(d))
 		digit := MakeDigit(strings.Split(digitAscii, ""))
 
 		account.digits[i] = digit
@@ -126,7 +126,7 @@ func (ocr AccountNumber) findPossibleAccountNumbers() []string {
 		alternates := digit.alternates()
 
 		for _, alternative_digit := range alternates {
-			newDigit := MakeDigit(strings.Split(alternative_digit, ""))
+			newDigit := MakeDigit(strings.Split(digitToAscii(alternative_digit), ""))
 			ocrCopy.digits[i] = newDigit
 
 			if ocrCopy.calculateCheckSum() {

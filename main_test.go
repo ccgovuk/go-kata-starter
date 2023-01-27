@@ -207,14 +207,14 @@ func TestAlternatesAgain(t *testing.T) {
 }
 
 func TestDigitToAsciiOk(t *testing.T) {
-	input := '0'
+	input := "0"
 	expected := " _ | ||_|"
 
 	assert.Equal(t, expected, digitToAscii(input))
 }
 
 func TestDigitToAsciiFail(t *testing.T) {
-	input := 'a'
+	input := "a"
 	expected := ""
 
 	assert.Equal(t, expected, digitToAscii(input))
